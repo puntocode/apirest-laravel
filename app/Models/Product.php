@@ -25,19 +25,24 @@ class Product extends Model
         return $this->status == Product::PRODUCTO_DISPONIBLE;
     }
 
-    #una producto tiene una relacion n:n con categoria tienendo asi en ambos modelos con belongsToMany
+    #un producto tiene una relacion n:n con categoria tienendo asi en ambos modelos con belongsToMany
     public function categories(){
         return $this->belongsToMany(Category::class);
     }
 
     #un producto tiene muchas transacciones
     public function transactions(){
-        return $this->hasMany(Seller::class);
+        return $this->hasMany(Transaction::class);
     }
 
     #la relacion belongs to (pertenece a) se agrega en la Clase que lleva la llave foranea
     public function seller(){
         return $this->belongsTo(Seller::class);
     }
+
+    #oculta los resultados pivot{ }
+    protected $hidden = [
+        'pivot'
+    ];
 
 }

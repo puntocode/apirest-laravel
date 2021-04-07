@@ -19,4 +19,9 @@ class Category extends Model
         return $this->belongsToMany(Product::class);
     }
 
+    #oculta los resultados pivot{ }
+    protected $hidden = [
+        'pivot'
+    ];
+
 }

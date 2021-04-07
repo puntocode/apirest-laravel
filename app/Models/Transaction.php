@@ -17,7 +17,7 @@ class Transaction extends Model
 
     #una transaccion pertenece a un producto
     public function products(){
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
     #una transaccion pertenece a un comprador

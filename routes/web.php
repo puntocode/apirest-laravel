@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Product;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     return "hola mundo";
-// });
+Route::get('/', function () {
+    return Product::with('seller')->get();
+});

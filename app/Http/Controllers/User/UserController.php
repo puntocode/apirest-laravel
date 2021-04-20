@@ -19,7 +19,8 @@ class UserController extends ApiController
      */
     public function index(){
         $usuarios = User::all();
-        return response()->json(['data' => $usuarios], 200);
+        return $this->showAll($usuarios);
+       // return response()->json(['data' => $usuarios], 200);
     }
 
     /**

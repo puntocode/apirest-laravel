@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Transformers\ProductTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,6 +12,8 @@ class Product extends Model
 
     const PRODUCTO_DISPONIBLE = 'DISPONIBLE';
     const PRODUCTO_NO_DISPONIBLE= 'NO DISPONIBLE';
+
+    public $transform = ProductTransformer::class;
 
     protected $fillable = [
         'name',

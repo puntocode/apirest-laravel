@@ -70,4 +70,7 @@ Route::resource('sellers.transactions', SellerTransactionController::class, ['on
 Route::resource('sellers.categories', SellerCategoryController::class, ['only' => ['index']] );
 Route::resource('sellers.buyers', SellerBuyerController::class, ['only' => ['index']] );
 Route::resource('sellers.products', SellerProductController::class, ['except' => ['create', 'edit', 'show']] );
+
 Route::resource('users', UserController::class, ['except' => ['create', 'edit']] );
+Route::get('/users/verify/{token}', [UserController::class, 'verify'])->name('verify');
+Route::get('/users/{user}/resend', [UserController::class, 'resend'])->name('resend');

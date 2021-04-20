@@ -4,8 +4,10 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
+use App\Mail\UserCreated;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Psy\CodeCleaner\UseStatementPass;
 
 class UserController extends ApiController
@@ -49,8 +51,9 @@ class UserController extends ApiController
         $campos['password'] = bcrypt($request->password);
         $campos['verified'] = User::USUARIO_NO_VERIFICADO;
         $campos['verification_token'] = User::generarVerificationToken();
+        //$campos['verification_token'] = 'PbrxMkJNfGCfiDMeQPwFPj3FPYDEenjXog2Cp8S5';
         $campos['admin'] = User::USUARIO_REGULAR;
-
+        //dd($campos);
         $usuario = User::create($campos);
         return response()->json(['data' => $usuario], 201);
     }
@@ -126,4 +129,37 @@ class UserController extends ApiController
         $user->delete();
         return response()->json(['data' => $user], 200);
     }
+
+    #http://127.0.0.1:8000/users/verify/827ccb0eea8a706c4c34a16891f84e7b
+    public function verify($token)
+    {
+        $user = User::where('verification_token', $token)->firstOrFail();
+        $user->verified = User::USUARIO_VERIFICADO;
+        $user->verification_token = null;
+        $user->save();
+
+       return $this->successMessage('La cuenta ha sido verificada!');
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     * http://127.0.0.1:8000/users/1/resend -> get
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function resend(User $user)
+    {
+        if($user->esVerificado()){
+            return $this->errorResponse('Este usuario ya ha sido verificado', 409);
+        }
+
+        #reintenta enviar hasta 5 veces por si llega a fallar
+        retry(5, function() use ($user){
+            Mail::to($user)->send(new UserCreated($user));
+        }, 100);
+
+        return $this->successMessage('El correo de verificacion se ha renenviado!');
+    }
+
 }

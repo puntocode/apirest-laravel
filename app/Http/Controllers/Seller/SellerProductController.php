@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Seller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SellerProductController extends ApiController
@@ -53,8 +54,11 @@ class SellerProductController extends ApiController
         $data = $request->all();
 
         $data['status'] = Product::PRODUCTO_NO_DISPONIBLE;
-        $data['image'] = 'x.jpg';
+        #store es un metodo para guardar archivos definidos en el fylesystem
+        #store recibe la ruta donde se guardara pero en este caso no necesitamos porque ya definimos en el fylesystem.
+        $data['image'] = $request->image->store('storage/uploads','public');
         $data['seller_id'] = $seller->id;
+        //dd($data);
 
         $product = Product::create($data);
 
@@ -65,7 +69,7 @@ class SellerProductController extends ApiController
 
     /**
      * Update the specified resource in storage.
-     *
+     * http://127.0.0.1:8000/sellers/3/products/11 con form-data method->put para subir imagen
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -101,6 +105,11 @@ class SellerProductController extends ApiController
             }
         }
 
+        if($request->hasFile('image')){
+            Storage::disk('public')->delete($product->image);
+            $product->image = $request->image->store('storage/uploads','public');
+        }
+
         if($product->isClean()){
             return $this->errorResponse('Se debe especificar al menos un valor diferente para acutalizar', 422);
         }
@@ -112,13 +121,15 @@ class SellerProductController extends ApiController
 
     /**
      * Remove the specified resource from storage.
-     *
+     * http://127.0.0.1:8000/sellers/3/products/id method delete
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Seller $seller, Product $product)
     {
         $this->verificarVendedor($seller, $product);
+        Storage::disk('public')->delete($product->image);
+        //Storage::delete('storage/uploads/FKHzNY8xSpqJVB6D6MSm4N64K236eLtUPF7p15GF.jpg');
         $product->delete();
         return $this->showOne($product);
     }

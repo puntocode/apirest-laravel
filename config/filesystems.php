@@ -13,8 +13,8 @@ return [
     |
     */
 
-    //'default' => env('FILESYSTEM_DRIVER', 'local'),
-    'default' => 'images',
+    'default' => env('FILESYSTEM_DRIVER', 'local'),
+    //'default' => 'images',
 
     /*
     |--------------------------------------------------------------------------
